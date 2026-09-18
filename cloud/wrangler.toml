@@ -1,0 +1,22 @@
+# =============================================================================
+# wrangler.toml: deployment settings for the device status-report service
+#
+# Deploy with:   cd cloud && npx wrangler deploy
+# First run opens a browser to log in to Cloudflare (free account, no card).
+# See docs/CLOUD_UPDATES.md §Verification for the full setup.
+# =============================================================================
+
+name = "esp32-device-status"
+main = "worker.js"
+
+# Workers runtime date: pins the platform behaviour so a future runtime change
+# can't silently alter how this service behaves.
+compatibility_date = "2026-01-01"
+
+# Key-value storage holding the last report per device (one small record each).
+# Create the namespace once with:
+#   npx wrangler kv namespace create DEVICES
+# then paste the printed id below, replacing PASTE_KV_NAMESPACE_ID_HERE.
+[[kv_namespaces]]
+binding = "DEVICES"
+id = "PASTE_KV_NAMESPACE_ID_HERE"

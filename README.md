@@ -4,7 +4,7 @@ A phone app sends Wi-Fi credentials to an **ESP32-C6** over **Bluetooth Low Ener
 
 | Part | Folder | Tech | Status |
 |---|---|---|---|
-| Firmware | [`firmware/`](firmware/) | ESP-IDF v5.x, `network_provisioning`, NimBLE | ✅ v1.1 (provisioning + wireless updates) |
+| Firmware | [`firmware/`](firmware/) | ESP-IDF v5.x, `network_provisioning`, NimBLE | ✅ v1.2 (provisioning + local & internet updates) |
 | Android app | [`android/`](android/) | Kotlin, Jetpack Compose, `esp-idf-provisioning-android` | 🚧 v1 in progress |
 | iOS app | `ios/` | Swift, SwiftUI, `ESPProvision` | ⏳ Later |
 
@@ -35,6 +35,14 @@ idf.py -p COMx flash monitor       # replace COMx with your board's port; Ctrl+]
 The IDF Component Manager downloads the managed components (`network_provisioning`, `led_strip`) on the first build.
 
 **Test without our app:** install Espressif's **"ESP BLE Provisioning"** app from the Play Store or App Store. Choose *Provision New Device* → *I don't have a QR code*, select `PROV_XXXXXX`, and enter PoP `abcd1234`.
+
+## Internet firmware updates (v1.2)
+Publish once; every board downloads it on its own (hourly check), from any network:
+```powershell
+cd firmware
+.\publish_release.ps1 -Version 1.2.1 -Notes "What changed"
+```
+Setup, safety mechanisms and the status dashboard: [`docs/CLOUD_UPDATES.md`](docs/CLOUD_UPDATES.md).
 
 ## Colour demo (v1.1)
 With the device on Wi-Fi, open `http://<device-ip>/` and tap 1-5: the LED changes colour and the device replies with `6 - n` (1→red→5, 2→blue→4, 3→green→3, 4→orange→2, 5→cyan→1). Details: [`docs/COLOR_API.md`](docs/COLOR_API.md).

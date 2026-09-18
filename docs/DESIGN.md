@@ -1,6 +1,6 @@
 # ESP32-C6 BLE Wi-Fi Provisioning: System Design (v1)
 
-> **Status:** v1.1 (v1 + wireless firmware updates). **Last updated:** 2026-09-18
+> **Status:** v1.2 (v1 + local wireless updates + internet updates). **Last updated:** 2026-09-18
 >
 > This document is the **single source of truth** for the project. Any AI agent or human working on the code should read it first and keep it up to date. When a decision changes, edit the relevant section **and** add an entry to the [Changelog](#16-changelog).
 
@@ -173,10 +173,13 @@ ble app/
 │   ├── DESIGN.md              # ← this file (single source of truth)
 │   ├── FIRMWARE_SETUP.md      # Step-by-step first build / flash / test guide
 │   ├── OTA_UPDATES.md         # Wireless firmware updates: setup + daily workflow
-│   └── COLOR_API.md           # Number 1-5 -> LED colour + mirrored reply (v1.1)
+│   ├── COLOR_API.md           # Number 1-5 -> LED colour + random reply (v1.1)
+│   └── CLOUD_UPDATES.md       # Internet (pull) updates + version reporting (v1.2)
 ├── firmware/                  # ESP-IDF project (target esp32c6)
 │   ├── build_and_flash.ps1    # One-command build + flash + monitor (Windows)
-│   ├── ota_push.ps1           # Push firmware over Wi-Fi (v1.1)
+│   ├── ota_push.ps1           # Push firmware over Wi-Fi, same network (v1.1)
+│   ├── publish_release.ps1    # Build + publish to GitHub Releases (v1.2)
+│   ├── version.txt            # Firmware version embedded in the image (v1.2)
 │   ├── partitions.csv         # Two app slots (ota_0/ota_1) for wireless updates
 │   ├── CMakeLists.txt         # Top-level ESP-IDF project file
 │   ├── sdkconfig.defaults     # Target, NimBLE, partition table, etc.
@@ -190,7 +193,12 @@ ble app/
 │       ├── status_led.c / .h  # LED state machine task
 │       ├── ota.c / ota.h      # Update server (HTTP) + mDNS name (v1.1)
 │       ├── color_api.c / .h   # /color endpoints + demo page (v1.1)
+│       ├── cloud_update.c / .h# Hourly internet update check + reporting (v1.2)
 │       └── reset_button.c / .h# BOOT long-press → erase creds + restart
+├── cloud/                     # Internet-update support (v1.2)
+│   ├── manifest.json          # Current version + download URL (devices poll this)
+│   ├── worker.js              # Cloudflare Worker collecting version reports
+│   └── wrangler.toml          # Worker deployment settings
 ├── android/                   # Android Studio project (Part B)
 │   ├── settings.gradle.kts    # Repos (google, mavenCentral, JitPack) + :app module
 │   ├── build.gradle.kts       # Root: plugin declarations only
@@ -408,6 +416,7 @@ These rules apply to **every file** in the repo, whether written by a person or 
 
 | Date & time | Change | Why |
 |---|---|---|
+| 2026-09-18 22:55 | **v1.2 built: internet firmware updates.** New `cloud_update.c/.h` (NTP clock sync, hourly manifest poll with jitter, HTTPS download via `esp_https_ota`, bad-version blacklist in NVS, status reporting, token-protected `/check-update`), `firmware/version.txt` for real version numbers, `firmware/publish_release.ps1` (build → GitHub release → manifest), `cloud/worker.js` + `wrangler.toml` (free Cloudflare service collecting version reports), guide in [CLOUD_UPDATES.md](CLOUD_UPDATES.md). Project also put under git with an initial commit. | The user needs to update boards that are on a different Wi-Fi from the laptop, plus automatic delivery and a way to confirm remotely that a version landed. Chosen settings: hourly polling, GitHub Releases hosting, cloud status endpoint. |
 | 2026-09-18 20:10 | Backlog: added **internet (pull-based) firmware updates** as the top item, ahead of the "My devices" list. | The user asked how to update a board that's on a different Wi-Fi from the laptop. v1.1 pushes only work on one network, so remote updates need the device to pull from an HTTPS URL instead. |
 | 2026-09-18 19:45 | Colour API changed: new colours (yellow, magenta, white, spring green, indigo) and the reply is now a **random 6-9** from the hardware RNG instead of the fixed `6 - n`. Pushed over Wi-Fi (build `97ed11db`, slot `ota_1`) and verified, including that repeated identical inputs give varying replies. | User request. New colours avoid the status colours (blue/green/purple/red); solid yellow is safe because the status yellow only blinks. |
 | 2026-09-18 19:10 | **Colour API added** (`color_api.c/.h`, new `STATUS_LED_CUSTOM` state): `GET /color?n=1..5` sets the LED colour (red, blue, green, orange, cyan) and replies with `6 - n`; `GET /` serves a button page. Registered on the HTTP server `ota.c` already runs. Delivered to the board **over Wi-Fi** (build `f9618173`) and all five inputs verified. Guide: [COLOR_API.md](COLOR_API.md). | User request: enter a number, see a colour, get a different number back. Reusing the existing server keeps one port and one code path; the endpoints skip the token because they only change an LED and must work from a browser. |

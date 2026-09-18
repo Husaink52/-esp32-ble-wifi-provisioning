@@ -32,4 +32,5 @@ This project provisions Wi-Fi credentials over BLE:
 - **Firmware helper:** `firmware/build_and_flash.ps1` (see `docs/FIRMWARE_SETUP.md`)
 - **Wireless firmware update:** `firmware/ota_push.ps1 -Mac <mac suffix>` (see `docs/OTA_UPDATES.md`); needs the laptop and board on the same Wi-Fi
 - **Colour demo endpoints:** `GET /` and `GET /color?n=1..5` on the device (see `docs/COLOR_API.md`)
+- **Publish an internet update:** `firmware/publish_release.ps1 -Version x.y.z` (see `docs/CLOUD_UPDATES.md`); bump `firmware/version.txt` every release
 - **Android:** `cd android && ./gradlew assembleDebug`. Needs JDK 17+, e.g. `JAVA_HOME="C:/Program Files/Android/Android Studio/jbr"`. Test on a physical phone, because emulators have no BLE.
