@@ -1,0 +1,27 @@
+# =============================================================================
+# firmware/main/idf_component.yml: IDF Component Manager dependencies
+#
+# The Component Manager downloads these from https://components.espressif.com
+# into firmware/managed_components/ on the first `idf.py build`, and records
+# the exact versions it resolved in firmware/dependencies.lock. Commit that
+# lock file so every build uses the same versions.
+# See docs/DESIGN.md §8 (Components).
+# =============================================================================
+dependencies:
+  # ESP-IDF itself. We target v5.3 or newer (docs/DESIGN.md §8).
+  idf: ">=5.3"
+
+  # Espressif's provisioning manager (successor to IDF's built-in
+  # wifi_provisioning). Provides the protocomm endpoints proto-ver,
+  # prov-session, prov-scan and prov-config over BLE, plus Security 0/1/2.
+  # Decision D1 in docs/DESIGN.md §2.
+  espressif/network_provisioning: ">=1.0.0"
+
+  # Driver for the WS2812 addressable RGB LED on GPIO8 of the DevKitC-1,
+  # implemented on the RMT peripheral. Used by status_led.c.
+  espressif/led_strip: "^3.0.0"
+
+  # mDNS responder: publishes <prefix><mac>.local so the OTA push script (and,
+  # later, the app's "My devices" screen) can find the device without its IP.
+  # Used by ota.c.
+  espressif/mdns: "^1.2"

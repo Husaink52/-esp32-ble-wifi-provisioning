@@ -1,0 +1,46 @@
+# =============================================================================
+# firmware/sdkconfig.defaults: default Kconfig values for this project
+#
+# When no "sdkconfig" file exists yet (first build or after deleting it),
+# ESP-IDF seeds the configuration from this file. Only NON-DEFAULT settings
+# that the design needs belong here, each with a comment saying why.
+# To change settings on your machine, use `idf.py menuconfig`; that edits the
+# generated "sdkconfig". Change THIS file only when the project-wide default
+# should change, and note it in docs/DESIGN.md.
+# =============================================================================
+
+# --- Target ------------------------------------------------------------------
+# Our hardware is the ESP32-C6-DevKitC-1 (docs/DESIGN.md §1).
+CONFIG_IDF_TARGET="esp32c6"
+
+# --- Bluetooth (BLE provisioning transport) -----------------------------------
+# Turn on the Bluetooth stack; the provisioning manager's BLE scheme needs it.
+CONFIG_BT_ENABLED=y
+# Use the NimBLE host instead of Bluedroid: less RAM/flash, BLE-only
+# (decision D6 in docs/DESIGN.md §2).
+CONFIG_BT_NIMBLE_ENABLED=y
+# One phone at a time is enough for provisioning; saves RAM per connection.
+CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1
+
+# --- Flash size ----------------------------------------------------------------
+# The ESP32-C6-DevKitC-1 module has 4 MB of flash. The default 2 MB setting
+# would waste half of it and leave no room for two OTA app slots.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+
+# --- Partition table ----------------------------------------------------------
+# Custom table with two app slots (ota_0/ota_1) + otadata, so firmware can be
+# updated over Wi-Fi. See firmware/partitions.csv for the full layout.
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# --- OTA safety ------------------------------------------------------------------
+# Boot a newly installed image in "pending verify" state: if it doesn't confirm
+# itself (ota.c does that once Wi-Fi is up), the bootloader rolls back to the
+# previous image. This makes a bad update recoverable without a USB cable.
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# --- Provisioning security ------------------------------------------------------
+# v1 uses Security 1 (X25519 + AES-CTR + Proof-of-Possession), decision D3.
+# It's usually on by default; set it explicitly so the build never silently
+# drops it.
+CONFIG_ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_1=y

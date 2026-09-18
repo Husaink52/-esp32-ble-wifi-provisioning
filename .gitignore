@@ -1,0 +1,34 @@
+# =============================================================================
+# .gitignore: files that must NOT be committed (generated or machine-specific)
+# See docs/DESIGN.md §7 for the repository layout.
+# =============================================================================
+
+# --- Firmware (ESP-IDF) ---------------------------------------------------------
+# Build output from `idf.py build`
+firmware/build/
+# Local menuconfig result. Project defaults live in sdkconfig.defaults.
+firmware/sdkconfig
+firmware/sdkconfig.old
+# Components downloaded by the IDF Component Manager. The versions are pinned
+# in firmware/dependencies.lock, which SHOULD be committed.
+firmware/managed_components/
+
+# --- Android (added in milestone B1) ---------------------------------------------
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.iml
+
+# --- Editors / OS ------------------------------------------------------------------
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- Firmware release/cloud-update artefacts (added 2026-09-18, v1.2) ----------
+# Address cache written by ota_push.ps1 (machine-specific).
+firmware/.ota_last_ip.txt
+# Node dependencies for the status-report Worker.
+cloud/node_modules/
+cloud/.wrangler/

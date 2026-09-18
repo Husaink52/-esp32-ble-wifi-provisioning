@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  themes.xml: platform (View-system) theme for the activity window.
+
+  Compose draws all UI with its own MaterialTheme (ui/theme/Theme.kt). This
+  theme only controls what's visible before Compose renders its first frame:
+  the window background, and no legacy action bar.
+-->
+<resources>
+    <style name="Theme.BleWifiProvisioning" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

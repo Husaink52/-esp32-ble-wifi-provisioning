@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  colors.xml: the few colours needed outside Compose (window background, launcher icon).
+  In-app colours are defined in ui/theme/Theme.kt.
+-->
+<resources>
+    <!-- Shown before the first Compose frame; matches the Material 3 light surface. -->
+    <color name="window_background">#FFFEF7FF</color>
+    <!-- Launcher icon background (blue, matching the device's "provisioning" LED colour). -->
+    <color name="ic_launcher_background">#FF1565C0</color>
+</resources>

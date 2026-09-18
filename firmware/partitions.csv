@@ -1,0 +1,33 @@
+# =============================================================================
+# firmware/partitions.csv: custom flash layout with two app slots for OTA updates
+#
+# Why custom: the built-in tables have a single app partition, so there is
+# nowhere to write a new firmware image while the current one runs. OTA needs
+# two app slots plus an "otadata" partition that records which slot to boot.
+#
+# How OTA uses it (docs/DESIGN.md §8, OTA updates):
+#   - The board runs from one slot (say ota_0) and writes the new image into
+#     the other (ota_1), then updates otadata and reboots into it.
+#   - If the new image fails to boot or fails its self-test, the bootloader
+#     falls back to the previous slot (CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE).
+#
+# Layout for 4 MB flash (ESP32-C6FH4). Offsets must be 64 KB (0x10000) aligned
+# for app partitions. Sizes: each slot is 1.94 MB; the v1 app is ~1.4 MB.
+#
+#   0x000000  bootloader (written by the build, not listed here)
+#   0x008000  partition table (not listed here)
+#   0x009000  nvs        24 KB  Wi-Fi credentials live here. Keeping the same
+#                               offset/size as the old layout means provisioned
+#                               devices keep their credentials across this change.
+#   0x00F000  otadata     8 KB  Which slot to boot; two copies for safety.
+#   0x011000  phy_init    4 KB  Radio calibration data.
+#   0x020000  ota_0    1.94 MB  App slot A.
+#   0x210000  ota_1    1.94 MB  App slot B.
+#
+# Name,     Type, SubType,  Offset,   Size
+# =============================================================================
+nvs,        data, nvs,      0x9000,   0x6000
+otadata,    data, ota,      0xF000,   0x2000
+phy_init,   data, phy,      0x11000,  0x1000
+ota_0,      app,  ota_0,    0x20000,  0x1F0000
+ota_1,      app,  ota_1,    0x210000, 0x1F0000

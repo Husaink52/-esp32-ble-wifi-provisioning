@@ -1,0 +1,136 @@
+# =============================================================================
+# firmware/main/Kconfig.projbuild: project-specific menuconfig options
+#
+# Shows up in `idf.py menuconfig` under "BLE Provisioning App Configuration".
+# Every option becomes a CONFIG_APP_* C macro in the generated sdkconfig.h.
+# Defaults match docs/DESIGN.md §2 (default values) and §6 (LED/button).
+# If you change a default here, update DESIGN.md and, for the PoP or name
+# prefix, the Android/iOS app defaults too.
+# =============================================================================
+
+menu "BLE Provisioning App Configuration"
+
+    config APP_PROV_POP
+        string "Proof-of-Possession (PoP) string"
+        default "abcd1234"
+        help
+            Shared secret for provisioning Security 1. The phone app must send
+            the same string or the secure session handshake fails.
+            v1 uses one shared PoP for all devices (decision D3). CHANGE IT
+            for any real deployment and keep the app default in sync.
+
+    config APP_PROV_NAME_PREFIX
+        string "BLE device name prefix"
+        default "PROV_"
+        help
+            The device advertises as <prefix><last 3 MAC bytes in hex>,
+            e.g. PROV_A1B2C3. The phone app filters BLE scan results on this
+            prefix, so keep it in sync with the app. Keep it short: BLE
+            advertising packets have very little room for the name.
+
+    config APP_STATUS_LED_GPIO
+        int "Status LED (WS2812) GPIO number"
+        default 8
+        range 0 30
+        help
+            GPIO for the addressable RGB LED. GPIO8 on ESP32-C6-DevKitC-1.
+
+    config APP_RESET_BUTTON_GPIO
+        int "Reset button GPIO number"
+        default 9
+        range 0 30
+        help
+            GPIO for the button used to erase Wi-Fi credentials. GPIO9 is the
+            BOOT button on ESP32-C6-DevKitC-1 (active low). It is a strapping
+            pin but safe to read as an input after boot.
+
+    config APP_RESET_HOLD_TIME_MS
+        int "Reset button hold time (ms)"
+        default 3000
+        range 500 20000
+        help
+            How long the button must be held before credentials are erased and
+            the device restarts into provisioning mode. Long enough to avoid
+            accidental resets.
+
+    config APP_WIFI_FAST_RETRIES
+        int "Wi-Fi fast reconnect attempts"
+        default 5
+        range 1 100
+        help
+            When an already-provisioned device loses Wi-Fi, it reconnects
+            immediately this many times, then waits APP_WIFI_RETRY_BACKOFF_MS
+            between attempts so it does not hammer the access point.
+
+    config APP_WIFI_RETRY_BACKOFF_MS
+        int "Wi-Fi reconnect back-off delay (ms)"
+        default 10000
+        range 1000 600000
+        help
+            Delay between reconnect attempts once the fast retries are used up.
+
+    config APP_OTA_TOKEN
+        string "Firmware update token"
+        default "update-me"
+        help
+            Shared secret required in the X-Update-Token header of every
+            request to the update server (POST /update, GET /info). Stops other
+            devices on the same Wi-Fi from pushing firmware to this device.
+            CHANGE IT for any real deployment, and pass the same value to
+            firmware/ota_push.ps1.
+
+    config APP_OTA_PORT
+        int "Firmware update server port"
+        default 80
+        range 1 65535
+        help
+            TCP port of the update server. 80 keeps the push URL short
+            (http://prov-xxxxxx.local/update).
+
+    config APP_MDNS_PREFIX
+        string "mDNS hostname prefix"
+        default "prov-"
+        help
+            The device answers to <prefix><last 3 MAC bytes>.local, e.g.
+            prov-e01c64.local. Used by the OTA push script instead of an IP
+            address, which the router may change.
+
+    config APP_CLOUD_MANIFEST_URL
+        string "Firmware manifest URL (internet updates)"
+        default ""
+        help
+            HTTPS address of the JSON manifest describing the newest firmware:
+              {"version":"1.2.0","url":"https://.../ble_wifi_prov.bin"}
+            The device downloads it on boot and every APP_CLOUD_POLL_MINUTES,
+            and installs the firmware when the version differs from its own.
+            Leave EMPTY to switch internet updates off entirely.
+            See docs/CLOUD_UPDATES.md.
+
+    config APP_CLOUD_REPORT_URL
+        string "Status report URL (optional)"
+        default ""
+        help
+            HTTPS endpoint the device POSTs its version to after each boot:
+              {"device":"e01c64","version":"1.2.0","slot":"ota_1","status":"running"}
+            Lets you confirm remotely that an update landed. Leave EMPTY to
+            disable reporting; updates still work without it.
+
+    config APP_CLOUD_POLL_MINUTES
+        int "Minutes between update checks"
+        default 60
+        range 1 10080
+        help
+            How often the device checks the manifest. Each check costs a few
+            kilobytes, so 60 minutes is negligible traffic. Use 1-5 while
+            developing if you don't want to wait for a scheduled check
+            (or call GET /check-update to force one).
+
+    config APP_CLOUD_NTP_SERVER
+        string "NTP server for clock sync"
+        default "pool.ntp.org"
+        help
+            HTTPS certificate checks need a correct date, and the chip boots
+            thinking it is 1970, so the clock is synced once per boot before
+            the first update check.
+
+endmenu

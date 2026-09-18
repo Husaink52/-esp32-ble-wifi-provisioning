@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  strings.xml: every user-visible text in the app.
+
+  All UI text lives here, not hard-coded in Kotlin, so it can be translated
+  later by adding res/values-<lang>/strings.xml. Grouped by screen in wizard
+  order (docs/DESIGN.md §9, Screens).
+  %1$s / %1$d are format arguments filled in by stringResource(id, args).
+-->
+<resources>
+    <string name="app_name">BLE Wi-Fi Setup</string>
+
+    <!-- Common -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_ok">OK</string>
+
+    <!-- Screen 1: Start / permissions -->
+    <string name="start_title">Set up a device</string>
+    <string name="start_body">This app connects to your ESP32 device over Bluetooth and sends it your Wi-Fi network name and password, so it can get online.\n\nMake sure the device is powered on and its LED is blinking blue.</string>
+    <string name="start_button">Get started</string>
+    <string name="start_permissions_denied">Bluetooth permission is needed to find nearby devices. Allow it in the app\'s settings.</string>
+    <string name="start_open_settings">Open app settings</string>
+    <string name="start_bluetooth_off">Bluetooth is turned off.</string>
+    <string name="start_turn_on_bluetooth">Turn on Bluetooth</string>
+    <string name="start_location_off">On this Android version, Location must be on to scan for Bluetooth devices.</string>
+    <string name="start_turn_on_location">Open Location settings</string>
+
+    <!-- Screen 2: Device scan -->
+    <string name="scan_title">Choose your device</string>
+    <string name="scan_scanning">Searching for devices…</string>
+    <string name="scan_rescan">Scan again</string>
+    <string name="scan_empty">No devices found.\nCheck the device is powered on and its LED is blinking blue. If the LED is green, it\'s already set up: hold its BOOT button for 3 seconds to reset it.</string>
+    <string name="scan_error_bluetooth_off">Bluetooth is off. Turn it on and scan again.</string>
+    <string name="scan_error_failed">Scanning failed. Please try again.</string>
+    <!-- Estimated distance from Bluetooth signal strength ("≈" because it's only approximate). -->
+    <string name="distance_approx_m">≈ %1$s m</string>
+    <string name="distance_far_m">&gt; %1$d m</string>
+
+    <!-- Screen 3: Connect -->
+    <string name="connect_title">Connecting</string>
+    <string name="connect_in_progress">Connecting securely to %1$s…</string>
+    <string name="connect_advanced">Advanced</string>
+    <string name="connect_pop_label">Proof of Possession (PoP)</string>
+    <string name="connect_pop_help">The secret configured in the device firmware. The default is %1$s.</string>
+    <string name="connect_error_bluetooth_off">Bluetooth is off.</string>
+    <string name="connect_error_failed">Couldn\'t connect to the device. Move closer and try again.</string>
+    <string name="connect_error_timeout">The device didn\'t respond in time. Move closer and try again.</string>
+    <string name="connect_error_session">Secure session failed. Check the Proof of Possession (PoP) under Advanced.</string>
+
+    <!-- Screen 4: Wi-Fi networks -->
+    <string name="wifi_title">Choose a Wi-Fi network</string>
+    <string name="wifi_subtitle">Networks your device can see (2.4 GHz only)</string>
+    <string name="wifi_loading">The device is scanning for networks…</string>
+    <string name="wifi_refresh">Refresh</string>
+    <string name="wifi_empty">The device didn\'t find any networks.</string>
+    <string name="wifi_load_failed">Couldn\'t get the network list from the device.</string>
+    <string name="wifi_other">Other network…</string>
+    <string name="wifi_secured">Secured</string>
+    <string name="wifi_open">Open</string>
+
+    <!-- Screen 5: Password -->
+    <string name="password_title">Enter network details</string>
+    <string name="password_ssid_label">Network name (SSID)</string>
+    <string name="password_label">Password</string>
+    <string name="password_show">Show password</string>
+    <string name="password_hide">Hide password</string>
+    <string name="password_too_short">Wi-Fi passwords are at least %1$d characters.</string>
+    <string name="password_open_network">This network is open, so no password is needed.</string>
+    <string name="password_connect">Connect device</string>
+
+    <!-- Screens 6 + 7: Provisioning progress / result -->
+    <string name="provision_title">Setting up</string>
+    <string name="provision_step_sending">Sending credentials</string>
+    <string name="provision_step_applying">Applying settings</string>
+    <string name="provision_step_connecting">Device is connecting to Wi-Fi</string>
+    <string name="provision_success_title">All set!</string>
+    <string name="provision_success_body">Your device is connected to %1$s.</string>
+    <string name="provision_done">Done</string>
+    <string name="provision_failed_title">Setup failed</string>
+    <string name="provision_error_wrong_password">The password for %1$s is incorrect.</string>
+    <string name="provision_error_not_found">The device couldn\'t find %1$s. Check the name and make sure it\'s a 2.4 GHz network in range.</string>
+    <string name="provision_error_rejected">The device is still recovering from the previous attempt. Wait about %1$d seconds, then try again.</string>
+    <string name="provision_error_disconnected">The connection to the device was lost.</string>
+    <string name="provision_error_unknown">Something went wrong while setting up the device.</string>
+    <string name="provision_start_over">Start over</string>
+
+    <!-- Device lost dialog (any connected screen) -->
+    <string name="device_lost_title">Device disconnected</string>
+    <string name="device_lost_body">The Bluetooth connection to the device was lost. Move closer and try again.</string>
+</resources>
