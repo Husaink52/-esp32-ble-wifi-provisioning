@@ -1,0 +1,6 @@
+{
+    "version":  "1.2.0",
+    "url":  "https://github.com/Husaink52/-esp32-ble-wifi-provisioning/releases/download/v1.2.0/ble_wifi_prov.bin",
+    "notes":  "First internet-updatable release: hourly manifest check, HTTPS download, rollback protection, colour API with random replies",
+    "published":  "2026-09-18T17:49:57Z"
+}
